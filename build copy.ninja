@@ -1,0 +1,177 @@
+# buildVariable: Build a variable font from a source file
+rule buildVariable
+  command = /Users/yunyusin/opt/anaconda3/envs/py3.12/bin/python -m $
+      gftools.builder.jobrunner fontmake --output-path $out -o variable $
+      $fontmake_type $in $args $stamp
+  description = buildVariable
+
+# fix: Run gftools-fix
+rule fix
+  command = /Users/yunyusin/opt/anaconda3/envs/py3.12/bin/python -m $
+      gftools.builder.jobrunner gftools-fix-font -o $out $args $in $stamp
+  description = fix
+
+# buildStat: Build a STAT table from one or more source files
+rule buildSTAT-operation
+  command = gftools-gen-stat --out $tempdir $args -- $in && mv $finalfile $
+      $out $stamp
+rule buildSTAT-postprocess
+  command = gftools-gen-stat --inplace $args -- $in $stamp
+
+# compress: Compress to webfont
+rule compress
+  command = /Users/yunyusin/opt/anaconda3/envs/py3.12/bin/python -m $
+      gftools.builder.jobrunner fonttools ttLib.woff2 compress -o $out $in $
+      $stamp
+  description = compress
+
+# instantiateUfo: Create instance UFOs from a Glyphs or designspace file
+rule instantiateUfo
+  command = /Users/yunyusin/opt/anaconda3/envs/py3.12/bin/python -m $
+      gftools.builder.jobrunner fontmake -i "$instance_name" -o ufo $
+      $fontmake_type $in $args $stamp
+  description = instantiateUfo
+
+# buildTTF: Build a TTF from a source file
+rule buildTTF
+  command = /Users/yunyusin/opt/anaconda3/envs/py3.12/bin/python -m $
+      gftools.builder.jobrunner fontmake --output-path $out -o ttf $
+      $fontmake_type $in $args $stamp
+  description = buildTTF
+
+# autohint: Run gftools-autohint
+rule autohint
+  command = /Users/yunyusin/opt/anaconda3/envs/py3.12/bin/python -m $
+      gftools.builder.jobrunner gftools-autohint $args -o $out $in $stamp
+  description = autohint
+
+# buildOTF: Build a OTF from a source file
+rule buildOTF
+  command = /Users/yunyusin/opt/anaconda3/envs/py3.12/bin/python -m $
+      gftools.builder.jobrunner fontmake --output-path $out -o otf $
+      $fontmake_type $in $args $stamp
+  description = buildOTF
+
+# copy: Copy a file
+rule copy
+  command = /Users/yunyusin/opt/anaconda3/envs/py3.12/bin/python -m $
+      gftools.builder.jobrunner cp $in $out $stamp
+  description = copy
+
+# Generating /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpl2gw5_9_
+build /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpl2gw5_9_: $
+    buildVariable sources/KambujaAksara25x26.glyphs
+  operation = buildVariable
+  args = --filter ...  --filter FlattenComponentsFilter --filter $
+      DecomposeTransformedComponentsFilter
+  fontmake_type = -g
+  fontmake_args =  --verbose WARNING 
+# Generating sources/instance_ufos/KambujaAksara25x26-Regular.ufo.json
+build sources/instance_ufos/KambujaAksara25x26-Regular.ufo.json: $
+    instantiateUfo sources/KambujaAksara25x26.glyphs
+  operation = instantiateUfo
+  instance_name = Kambuja Aksara 25x26 Regular
+  fontmake_type = -g
+  fontmake_args =  --verbose WARNING 
+  args =  --ufo-structure=json --instance-dir sources/instance_ufos
+# Generating sources/instance_ufos/KambujaAksara25x26-Bold.ufo.json
+build sources/instance_ufos/KambujaAksara25x26-Bold.ufo.json: $
+    instantiateUfo sources/KambujaAksara25x26.glyphs
+  operation = instantiateUfo
+  instance_name = Kambuja Aksara 25x26 Bold
+  fontmake_type = -g
+  fontmake_args =  --verbose WARNING 
+  args =  --ufo-structure=json --instance-dir sources/instance_ufos
+# Postprocessing  with BuildSTAT
+build $
+    /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmp9e6muvbr.buildStatstamp: $
+    buildSTAT-postprocess fonts//variable/KambujaAksara25x26[wght].ttf
+  stamp =  && touch $
+      /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmp9e6muvbr.buildStatstamp
+  postprocess = buildStat
+# Generating fonts//webfonts/KambujaAksara25x26[wght].woff2
+build fonts//webfonts/KambujaAksara25x26[wght].woff2: compress $
+    fonts//variable/KambujaAksara25x26[wght].ttf
+  operation = compress
+# Generating fonts//webfonts/KambujaAksara25x26-Regular.woff2
+build fonts//webfonts/KambujaAksara25x26-Regular.woff2: compress $
+    fonts//ttf/KambujaAksara25x26-Regular.ttf
+  operation = compress
+# Generating fonts//webfonts/KambujaAksara25x26-Bold.woff2
+build fonts//webfonts/KambujaAksara25x26-Bold.woff2: compress $
+    fonts//ttf/KambujaAksara25x26-Bold.ttf
+  operation = compress
+# Generating fonts//variable/KambujaAksara25x26[wght].ttf
+build fonts//variable/KambujaAksara25x26[wght].ttf: fix $
+    /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpl2gw5_9_
+  operation = fix
+  args = 
+# Generating /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpn58523yn
+build /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpn58523yn: $
+    buildTTF sources/instance_ufos/KambujaAksara25x26-Regular.ufo.json
+  operation = buildTTF
+  args = --filter ...  --filter FlattenComponentsFilter --filter $
+      DecomposeTransformedComponentsFilter
+  fontmake_type = -u
+  fontmake_args =  --verbose WARNING 
+# Generating /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpndtm67oq
+build /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpndtm67oq: $
+    buildOTF sources/instance_ufos/KambujaAksara25x26-Regular.ufo.json
+  operation = buildOTF
+  args = --filter ...  --filter FlattenComponentsFilter --filter $
+      DecomposeTransformedComponentsFilter
+  fontmake_type = -u
+  fontmake_args =  --verbose WARNING 
+# Generating /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmptm7rqvar
+build /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmptm7rqvar: $
+    autohint /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpn58523yn
+  operation = autohint
+  args = --fail-ok 
+# Generating fonts//ttf/KambujaAksara25x26-Regular.ttf
+build fonts//ttf/KambujaAksara25x26-Regular.ttf: fix $
+    /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmptm7rqvar
+  operation = fix
+  args = 
+# Generating fonts//otf/KambujaAksara25x26-Regular.otf
+build fonts//otf/KambujaAksara25x26-Regular.otf: fix $
+    /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpndtm67oq
+  operation = fix
+  args = 
+# Generating /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpn8yj_6z0
+build /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpn8yj_6z0: $
+    buildTTF sources/instance_ufos/KambujaAksara25x26-Bold.ufo.json
+  operation = buildTTF
+  args = --filter ...  --filter FlattenComponentsFilter --filter $
+      DecomposeTransformedComponentsFilter
+  fontmake_type = -u
+  fontmake_args =  --verbose WARNING 
+# Generating /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpti3c1th5
+build /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpti3c1th5: $
+    buildOTF sources/instance_ufos/KambujaAksara25x26-Bold.ufo.json
+  operation = buildOTF
+  args = --filter ...  --filter FlattenComponentsFilter --filter $
+      DecomposeTransformedComponentsFilter
+  fontmake_type = -u
+  fontmake_args =  --verbose WARNING 
+# Generating /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpsn28ahqz
+build /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpsn28ahqz: $
+    autohint /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpn8yj_6z0
+  operation = autohint
+  args = --fail-ok 
+# Generating fonts//ttf/KambujaAksara25x26-Bold.ttf
+build fonts//ttf/KambujaAksara25x26-Bold.ttf: fix $
+    /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpsn28ahqz
+  operation = fix
+  args = 
+# Generating fonts//otf/KambujaAksara25x26-Bold.otf
+build fonts//otf/KambujaAksara25x26-Bold.otf: fix $
+    /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmpti3c1th5
+  operation = fix
+  args = 
+default $
+    /var/folders/zh/s6kx67p96t9cljztbvnx8_q80000gn/T/tmp9e6muvbr.buildStatstamp $
+    fonts//webfonts/KambujaAksara25x26[wght].woff2 $
+    fonts//webfonts/KambujaAksara25x26-Regular.woff2 $
+    fonts//webfonts/KambujaAksara25x26-Bold.woff2 $
+    fonts//otf/KambujaAksara25x26-Regular.otf $
+    fonts//otf/KambujaAksara25x26-Bold.otf
